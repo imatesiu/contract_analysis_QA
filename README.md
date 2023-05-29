@@ -38,3 +38,8 @@ npm run serve
 python.exe ./manage.py runserver
 ```
 
+# cancellare record del database (reset delle info salvate) - cartella odner_app/
+```
+python.exe ./delete_record.py
+```
+
