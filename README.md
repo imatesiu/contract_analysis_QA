@@ -1,4 +1,4 @@
-# envirnonment setup
+# envirnonment setup NECESSARIO PYTHON v. 3.9.13 O SUPERIORE
 
 ## all'interno della cartella odner_app/
 
