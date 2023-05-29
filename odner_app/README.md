@@ -6,7 +6,9 @@
 
 python -m pip install --upgrade pip
 
-pip install virtualenv    
+pip install virtualenv  
+
+virtualenv venv
 
 source venv/bin/activate  # Activate the virtual environment (Linux/Mac)
 
