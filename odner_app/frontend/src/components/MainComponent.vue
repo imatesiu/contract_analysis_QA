@@ -978,7 +978,7 @@ export default {
                         }, 2000);
 
                         // Retrieve the updated configuration
-                        axios.post("https://gram.ISTI.CNR.it/llm/api/load-config/", {
+                        axios.post("https://localhost:8000/api/load-config/", {
                             file_txt_path: this.txt_file,
                             language: this.language,
                             text: this.text,
@@ -998,7 +998,7 @@ export default {
                                 this.saving_question = false;
                             });
                         // Retrieve the available configurations
-                        axios.post("https://gram.ISTI.CNR.it/llm/api/get-config/", { "language": this.language })
+                        axios.post("https://localhost:8000/api/get-config/", { "language": this.language })
                             .then(response => {
                                 if (this.language == "it") {
                                     this.available_configs_it = response.data.configs; // Store the Italian configurations
@@ -1151,7 +1151,7 @@ export default {
 
                         this.scrollDown();
                         // Send a POST request to the API endpoint to load the updated configuration file.
-                        axios.post("https://localhost:8000/llm/api/load-config/", { file_txt_path: this.txt_file, language: this.language, text: this.text, f_up: this.file_uploaded })
+                        axios.post("https://localhost:8000/api/load-config/", { file_txt_path: this.txt_file, language: this.language, text: this.text, f_up: this.file_uploaded })
                             .then(response => {
                                 // Parse the loaded JSON data into an object and set it to a variable.
                                 this.dictionaryObj = JSON.parse(response.data.jsonner_str);
