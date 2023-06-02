@@ -17,6 +17,7 @@ The class EditSerializer is used to serialize the EditText object, which is used
 
 # import libraries
 import json
+import spacy_transformers
 import re
 import os
 import spacy

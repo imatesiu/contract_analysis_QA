@@ -31,6 +31,7 @@ from django.db import transaction
 import spacy
 import threading
 from functools import wraps
+import spacy_transformers
 
 
 

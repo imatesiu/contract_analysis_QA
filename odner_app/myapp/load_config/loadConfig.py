@@ -29,6 +29,7 @@ from django.db import transaction
 import threading
 from functools import wraps
 from transformers import pipeline
+import spacy_transformers
 
 def thread_safe(func):
     lock = threading.RLock()
@@ -128,8 +129,6 @@ class LoadConfig(generics.CreateAPIView):
         :returns: JSON response object.
         :rtype: JsonResponse object.
         """
-
-        
 
         # Get input data from the request.
         txt_file_path = request.data.get('file_txt_path', None)
