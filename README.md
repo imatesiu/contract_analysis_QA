@@ -16,6 +16,10 @@ myenv\Scripts\activate     # Activate the virtual environment (Windows)
 
 pip install -r requirements.txt
 
+python -m spacy download en_core_web_trf
+
+python -m spacy download it_core_news_lg
+
 ```
 
 
