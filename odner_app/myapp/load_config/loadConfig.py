@@ -139,6 +139,12 @@ class LoadConfig(generics.CreateAPIView):
         # Fix file path format for Windows.
         txt_file_path = re.sub("/C%3A", "C:", txt_file_path)
 
+        cartella = os.path.dirname(os.path.abspath(__file__)) + '/JSONDicts/'
+
+        if not os.path.exists(cartella):
+            # Crea la cartella
+            os.makedirs(cartella)
+
         # Check if the NER object already exists.
         ner_obj = NER.objects.filter(title=txt_file_path).first()
 
