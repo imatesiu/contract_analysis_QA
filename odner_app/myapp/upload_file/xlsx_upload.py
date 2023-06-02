@@ -72,6 +72,8 @@ class XLSXUploadView(generics.CreateAPIView):
 
         uploaded_file = request.FILES.get('file', None)
 
+        xlsx_new = None
+
         if not uploaded_file:
             return JsonResponse({'error': 'No file uploaded'})
 
@@ -97,7 +99,7 @@ class XLSXUploadView(generics.CreateAPIView):
 
                     with open(file_path, "wb") as out:
 
-                        towrite = XLSXUploadView.extraction(uploaded_file)
+                        towrite = extraction(uploaded_file)
                         out.write(towrite.encode('utf-8'))
 
                 xlsx_new = XLSX.objects.filter(title = file_path_xlsx).first()
@@ -110,7 +112,7 @@ class XLSXUploadView(generics.CreateAPIView):
                 else:
                     with transaction.atomic():
                         xlsx_new = XLSX.objects.create(
-                            title=file_path_xlsx, xlsx_file=uploaded_file, xlsx_text_it=None, xlsx_text_en=towrite, txt_file_xlsx_it=None, txt_file_xlsx_en=file_path)
+                            title=file_path_xlsx, xlsx_file=uploaded_file, xlsx_text_it=towrite, xlsx_text_en=None, txt_file_xlsx_it=file_path, txt_file_xlsx_en=None)
                         xlsx_new.save()
         
                 serializer = XLSXSerializer(xlsx_new)
@@ -123,8 +125,8 @@ class XLSXUploadView(generics.CreateAPIView):
 
                     with open(file_path, "wb") as out:
 
-                        towrite = XLSXUploadView.extraction(uploaded_file)
-                        towrite = XLSXUploadView.translate(towrite)
+                        towrite = extraction(uploaded_file)
+                        towrite = translate(towrite)
                         out.write(towrite.encode('utf-8'))
 
                 with transaction.atomic():
@@ -147,7 +149,7 @@ class XLSXUploadView(generics.CreateAPIView):
                     with self.lock:
                         with open(file_path, "wb") as out:
 
-                            towrite = XLSXUploadView.extraction(uploaded_file)
+                            towrite = extraction(uploaded_file)
                             out.write(towrite.encode('utf-8'))
 
                     # recupero record
@@ -168,8 +170,8 @@ class XLSXUploadView(generics.CreateAPIView):
                     with self.lock:
                         with open(file_path, "wb") as out:
 
-                            towrite = XLSXUploadView.extraction(uploaded_file)
-                            towrite = XLSXUploadView.translate(towrite)
+                            towrite = extraction(uploaded_file)
+                            towrite = translate(towrite)
                             out.write(towrite.encode('utf-8'))
 
                     # recupero record
