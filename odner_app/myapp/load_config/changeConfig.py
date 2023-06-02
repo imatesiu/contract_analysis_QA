@@ -33,6 +33,7 @@ import threading
 from functools import wraps
 
 
+
 def ner(txt_to_ner, language):
     """
     Performs Named Entity Recognition (NER) on text.
@@ -47,7 +48,7 @@ def ner(txt_to_ner, language):
     if language == 'it':
         nlp = spacy.load("it_core_news_lg")
     else:
-        nlp = spacy.load("en_core_web_lg")
+        nlp = spacy.load("en_core_web_trf")
 
     # perform NER on text
     doc = nlp(txt_to_ner)
