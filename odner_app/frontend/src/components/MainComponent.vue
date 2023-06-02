@@ -1171,7 +1171,7 @@ export default {
                                 alert(error);
                             });
                         // Send a POST request to the API endpoint to get the available configuration options.
-                        axios.post("https://localhost:8000/api/get-config/", { "language": this.language })
+                        axios.post("http://localhost:8000/api/get-config/", { "language": this.language })
                             .then(response => {
                                 // If the language is Italian, update the available Italian configuration options.
                                 if (this.language == "it") {
@@ -1260,7 +1260,6 @@ export default {
 </script>
 
 <style>
-
 .toast {
     bottom: 20px;
     left: 20px;
