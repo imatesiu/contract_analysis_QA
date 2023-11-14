@@ -195,7 +195,7 @@ class TXTUploadView(generics.CreateAPIView):
                 queryset = PDF.objects.select_for_update().filter(title=file_path_pdf).all()
 
                 with transaction.atomic():
-                        queryset.update(pdf_text_en = string[5:], txt_file_pdf_en = file_path)
+                        queryset.update(pdf_text_en = string, txt_file_pdf_en = file_path)
 
                 pdf = PDF.objects.filter(title=file_path_pdf).first()
                 pdf.save
