@@ -91,8 +91,6 @@ class DOCUploadView(generics.CreateAPIView):
         if not os.path.exists(txt_dir):
             os.makedirs(txt_dir)
 
-        doc_new = None
-
         file_name = uploaded_file.name
 
         file_path = os.path.join(txt_dir, file_name[:-5]+'-' + language + '.txt')
@@ -106,7 +104,7 @@ class DOCUploadView(generics.CreateAPIView):
                 with self.lock:
                     with open(file_path, "wb") as out:
 
-                        towrite = extraction(uploaded_file)
+                        towrite = DOCUploadView.extraction(uploaded_file)
                         out.write(towrite.encode('utf-8'))
                 
                 doc_new = DOC.objects.filter(title = file_path_docx).first()
@@ -120,7 +118,7 @@ class DOCUploadView(generics.CreateAPIView):
                 else:
                     with transaction.atomic():
                         doc_new = DOC.objects.create(
-                            title=file_path_docx, doc_file=uploaded_file, docx_text_it=towrite, docx_text_en=None, txt_file_docx_it=file_path, txt_file_docx_en=None)
+                            title=file_path_docx, doc_file=uploaded_file, docx_text_it=None, docx_text_en=towrite, txt_file_docx_it=None, txt_file_docx_en=file_path)
                         doc_new.save()
 
                 serializer = DOCSerializer(doc_new)
@@ -132,8 +130,8 @@ class DOCUploadView(generics.CreateAPIView):
                 with self.lock:
                     with open(file_path, "wb") as out:
 
-                        towrite = extraction(uploaded_file)
-                        towrite = translate(towrite)
+                        towrite = DOCUploadView.extraction(uploaded_file)
+                        towrite = DOCUploadView.translate(towrite)
                         out.write(towrite.encode('utf-8'))
 
                 if doc_new:
@@ -141,11 +139,11 @@ class DOCUploadView(generics.CreateAPIView):
                      
                     with transaction.atomic():
                         queryset.update(
-                            title=file_path_docx, doc_file=uploaded_file, docx_text_it=None, docx_text_en=towrite, txt_file_docx_it=None, txt_file_docx_en=file_path)
+                            title=file_path_docx, doc_file=uploaded_file, docx_text_it=towrite, docx_text_en=None, txt_file_docx_it=file_path, txt_file_docx_en=None)
                 else:
                     with transaction.atomic():
                         doc_new = DOC.objects.create(
-                            title=file_path_docx, doc_file=uploaded_file, docx_text_it=None, docx_text_en=towrite, txt_file_docx_it=None, txt_file_docx_en=file_path)
+                            title=file_path_docx, doc_file=uploaded_file, docx_text_it=towrite, docx_text_en=None, txt_file_docx_it=file_path, txt_file_docx_en=None)
                         doc_new.save()
                 
                 serializer = DOCSerializer(doc_new)
@@ -162,7 +160,7 @@ class DOCUploadView(generics.CreateAPIView):
                     with self.lock:
                         with open(file_path, "wb") as out:
 
-                            towrite = extraction(uploaded_file)
+                            towrite = DOCUploadView.extraction(uploaded_file)
                             out.write(towrite.encode('utf-8'))
 
                     # recupero record
@@ -183,8 +181,8 @@ class DOCUploadView(generics.CreateAPIView):
                     with self.lock:
                         with open(file_path, "wb") as out:
 
-                            towrite = extraction(uploaded_file)
-                            towrite = translate(towrite)
+                            towrite = DOCUploadView.extraction(uploaded_file)
+                            towrite = DOCUploadView.translate(towrite)
                             out.write(towrite.encode('utf-8'))
 
                     # recupero record

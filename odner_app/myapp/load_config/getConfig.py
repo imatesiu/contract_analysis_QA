@@ -108,7 +108,7 @@ class GetConfig(generics.CreateAPIView):
         entities = []
 
         # Define the directory where the JSON config files are stored
-        directory = os.path.dirname(os.path.abspath(__file__)) + '\json_configs/'
+        directory = os.path.dirname(os.path.abspath(__file__)) + '/json_configs/'
 
         # Load the base English entity model from a JSON file and update it with the "Spacy" model type
         entity_model_en = JSONToDict(directory + 'base-en.json')

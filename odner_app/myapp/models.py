@@ -15,19 +15,20 @@ The code defines six Django models to store different types of data:
 
 """
 
-
 from django.db import models
-
-
+import logging
+#basepath =  '/var/www/llm/'
+basepath =  ''
 class PDF(models.Model):
     """
     Model for PDF files.
     """
-
+    logger = logging.getLogger('appLog')
     title = models.CharField(max_length=200)  # title of the document
-    pdf_file = models.FileField(
-        upload_to='myapp/upload_file//myapp_file/pdfs/')  # file to be processed
-
+   # pdf_file = models.FileField('/tmp/')  # file to be processed
+    pdf_file = models.FileField(upload_to=basepath+'myapp/upload_file/myapp_file/pdfs/')  # file to be processed
+    #logger.error('CIA0')
+    #logger.error(pdf_file)
     # extracted and translated Italian text
     pdf_text_it = models.TextField(blank=True, null=True, max_length=None)
     # extracted and translated English text
@@ -52,7 +53,7 @@ class DOC(models.Model):
 
     title = models.CharField(max_length=200)
     doc_file = models.FileField(
-        upload_to='myapp/upload_file//myapp_file/docs/')
+        upload_to=basepath+'myapp/upload_file/myapp_file/docs/')
 
     # extracted and translated Italian text
     docx_text_it = models.TextField(blank=True, null=True, max_length=None)
@@ -78,7 +79,7 @@ class XLSX(models.Model):
 
     title = models.CharField(max_length=200)
     xlsx_file = models.FileField(
-        upload_to='myapp/upload_file//myapp_file/xlsx/')
+        upload_to=basepath+'myapp/upload_file/myapp_file/xlsx/')
 
     # extracted and translated Italian text
     xlsx_text_it = models.TextField(blank=True, null=True, max_length=None)

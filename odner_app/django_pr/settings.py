@@ -13,8 +13,12 @@ SECRET_KEY = "django-insecure-=+e-)^j=v2_)8=b-zrmz9g1b178ehzons+-so^o2g7+pn-@woj
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+#ALLOWED_HOSTS = ["gram.isti.cnr.it","146.48.84.97"]
+ALLOWED_HOSTS = ['*']
+#SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+#SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 # Application definition
 
@@ -118,3 +122,8 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+STATIC_ROOT = '/var/www/llm/frontend/dist/'
+FILE_UPLOAD_PERMISSIONS = 0o755
+
+MEDIA_ROOT = '/var/www/llm/'

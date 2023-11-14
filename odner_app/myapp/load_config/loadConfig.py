@@ -29,7 +29,6 @@ from django.db import transaction
 import threading
 from functools import wraps
 from transformers import pipeline
-import spacy_transformers
 
 def thread_safe(func):
     lock = threading.RLock()
@@ -101,7 +100,7 @@ def ner(txt_to_ner, language):
     if language == 'it':
         nlp = spacy.load("it_core_news_lg")
     else:
-        nlp = spacy.load("en_core_web_trf")
+        nlp = spacy.load("en_core_web_lg")
 
     # perform NER on text
     doc = nlp(txt_to_ner)
@@ -130,6 +129,8 @@ class LoadConfig(generics.CreateAPIView):
         :rtype: JsonResponse object.
         """
 
+        
+
         # Get input data from the request.
         txt_file_path = request.data.get('file_txt_path', None)
         language = request.data.get('language', None)
@@ -138,12 +139,6 @@ class LoadConfig(generics.CreateAPIView):
 
         # Fix file path format for Windows.
         txt_file_path = re.sub("/C%3A", "C:", txt_file_path)
-
-        cartella = os.path.dirname(os.path.abspath(__file__)) + '/JSONDicts/'
-
-        if not os.path.exists(cartella):
-            # Crea la cartella
-            os.makedirs(cartella)
 
         # Check if the NER object already exists.
         ner_obj = NER.objects.filter(title=txt_file_path).first()
@@ -157,10 +152,10 @@ class LoadConfig(generics.CreateAPIView):
 
         # Get file paths for config and JSON dictionary.
         if language == 'en':
-            file_config = os.path.dirname(os.path.abspath(__file__)) + '\json_configs' + '\\base-en.json'
+            file_config = os.path.dirname(os.path.abspath(__file__)) + '/json_configs' + '/base-en.json'
             file_path_json_dict = os.path.dirname(os.path.abspath(__file__)) + '/JSONDicts/' + path + 'base-en' + '.json'
         else:
-            file_config = os.path.dirname(os.path.abspath(__file__)) + '\json_configs' + '\\base-it.json'
+            file_config = os.path.dirname(os.path.abspath(__file__)) + '/json_configs' + '/base-it.json'
             file_path_json_dict = os.path.dirname(os.path.abspath(__file__)) + '/JSONDicts/' + path + 'base-it' + '.json'
 
 

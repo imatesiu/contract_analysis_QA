@@ -17,7 +17,6 @@ The class EditSerializer is used to serialize the EditText object, which is used
 
 # import libraries
 import json
-import spacy_transformers
 import re
 import os
 import spacy
@@ -45,7 +44,7 @@ def ner(txt_to_ner, language):
     if language == 'it':
         nlp = spacy.load("it_core_news_lg")
     else:
-        nlp = spacy.load("en_core_web_trf")
+        nlp = spacy.load("en_core_web_lg")
 
     # perform NER on text
     doc = nlp(txt_to_ner)

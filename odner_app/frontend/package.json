@@ -14,6 +14,7 @@
     "core-js": "^3.8.3",
     "fortawesome": "^0.0.1-security",
     "jquery": "^3.6.4",
+    "serve": "^14.2.1",
     "vue": "^2.6.14",
     "vue-router": "^3.6.5",
     "vue-word-highlighter": "^1.2.3"

@@ -1,6 +1,7 @@
 import os
 import re
-
+import logging
+import getpass
 from django.http import JsonResponse
 from rest_framework import generics
 from PyPDF2 import PdfReader
@@ -84,6 +85,7 @@ class PDFUploadView(generics.CreateAPIView):
         :return: HTTP response.
         :rtype: JsonResponse.
         """
+        logger = logging.getLogger('appLog')
         uploaded_file = request.FILES.get('file', None)
 
         if not uploaded_file:
@@ -93,44 +95,55 @@ class PDFUploadView(generics.CreateAPIView):
 
         file_name = uploaded_file.name
 
-        txt_dir = os.path.join(
-                    os.path.dirname(os.path.abspath(__file__)), 'txt_files/pdfs/')
+        txt_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'txt_files/pdfs/')
 
         if not os.path.exists(txt_dir):
             os.makedirs(txt_dir)
-
+        logger.error(txt_dir)
+        #txt_dir = '/tmp/'
         file_path = os.path.join(txt_dir, file_name[:-4]+'-' + language + '.txt')
         
         file_path = re.sub("/C%3A","C:",file_path)
 
-        
+        logger.error(os.getcwd())
+        logger.error('ciao4')
+
         file_path_pdf = os.path.join(
             os.path.dirname(os.path.abspath(__file__)), 'myapp_file/pdfs/', file_name)
-        
-        pdf_new = None
+        logger.error(file_path_pdf)
 
+#        file_path_pdf=os.path.basename(file_path_pdf)
+
+        logger.error(file_path_pdf)
+        logger.error('ciao5')
+        #file_path_pdf = '/tmp/'+file_name
+        logger.error(uploaded_file)
+        logger.error(language) 
+        pdf_new = None
+        logger.error(os.path.exists(file_path_pdf))
         if not(os.path.exists(file_path_pdf)):
             if(language == 'it'): #estrazione in italiano
                 
 
                 with self.lock:
-                    with open(file_path, "wb") as out:
-
+                    with open(file_path, "wb+") as out:
                         towrite = PDFUploadView.extraction(uploaded_file)
                         out.write(towrite.encode('utf-8'))
 
                 pdf_new = PDF.objects.filter(title = file_path_pdf).first()
-
+                logger.error(pdf_new)
+                logger.error(file_path)
+                logger.error(file_path_pdf)
                 if pdf_new:
                     queryset = PDF.objects.select_for_update().filter(title = file_path_pdf).all()
                     with transaction.atomic():
-                        queryset.update(
-                            title=file_path_pdf, pdf_file=uploaded_file, pdf_text_it=towrite, pdf_text_en=None, txt_file_pdf_it=file_path, txt_file_pdf_en=None)
+                        queryset.update(title=file_path_pdf, pdf_file=uploaded_file, pdf_text_it=towrite, pdf_text_en=None, txt_file_pdf_it=file_path, txt_file_pdf_en=None)
                 else:
 
                     with transaction.atomic():
-                        pdf_new = PDF.objects.create(
-                            title=file_path_pdf, pdf_file=uploaded_file, pdf_text_it=towrite, pdf_text_en=None, txt_file_pdf_it=file_path, txt_file_pdf_en=None)
+                        pdf_new = PDF.objects.create(title=file_path_pdf, pdf_file=uploaded_file, pdf_text_it=towrite, pdf_text_en=None, txt_file_pdf_it=file_path, txt_file_pdf_en=None)
+                        #pdf_new = PDF.objects.create(title=file_path_pdf, pdf_file=uploaded_file)
+
                         pdf_new.save()
         
                 serializer = PDFSerializer(pdf_new)
@@ -139,7 +152,7 @@ class PDFUploadView(generics.CreateAPIView):
         
             else:
                 with self.lock:
-                    with open(file_path, "wb") as out:
+                    with open(file_path, "wb+") as out:
 
                         towrite = PDFUploadView.extraction(uploaded_file)
                         towrite = PDFUploadView.translate(towrite)

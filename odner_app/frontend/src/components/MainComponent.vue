@@ -102,7 +102,7 @@
                         <!-- This is the file input field where user can select a file -->
                         <div class="mb-3">
                             <label for="file-input" class="form-label">Choose file:</label>
-                            <input id="file-input" type="file" class="form-control" ref="file" accept=".pdf,.docx,.xlsx">
+                            <input id="file-input" type="file" class="form-control" ref="file" accept=".pdf,.docx,.xlsx,.txt">
                         </div>
 
                         <!-- This is the language selection dropdown for the user -->
@@ -638,8 +638,15 @@ export default {
             // Create a new FormData object.
             let formData = new FormData();
             // Add the file object and the language property to the form data object.
-            formData.append("file", this.$refs.file.files[0]);
+            //formData.append("file", this.$refs.file.files[0],this.$refs.file.files[0].name);
+            formData.append("file", new Blob([this.$refs.file.files[0]], {type:"application/x.binary"}), this.$refs.file.files[0].name);
             formData.append("language", this.language);
+let config = {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/x.binary'
+        }
+    };
             // Get the file object from the input element.
             let file = this.$refs.file.files[0];
             // Check the file type to determine which API endpoint to call.
@@ -647,10 +654,49 @@ export default {
                 alert("Choose a file!");
                 this.loading = false;
             } else {
-                if (file.type === "application/pdf") {
+                if(file.type==="text/plain"){
+                   //alert("Supported txt !!!");
+                      axios
+                        .post("https://ondemandner.isti.cnr.it/llm/api/txt-upload/", formData,config)
+                        .then(response => {
+                            // If the language is Italian, set the text and TXT file to the Italian versions.
+                            if (this.language == "it") {
+                                this.text = response.data.pdf_text_it;
+                                this.txt_file = response.data.txt_file_pdf_it;
+                            }
+                            // Otherwise, set the text and TXT file to the English versions.
+                            else {
+                                this.text = decodeURIComponent((response.data.pdf_text_en));
+                                this.txt_file = response.data.txt_file_pdf_en;
+                            }
+                            // Set the file_uploaded property to the title of the uploaded file.
+                            this.file_uploaded = response.data.title;
+
+                            this.loading = false;
+                            setTimeout(() => {
+                                window.scrollTo(0, document.body.scrollHeight);
+                            }, 500);
+
+                            this.showToast = true;
+
+                            setTimeout(() => {
+                                this.showToast = false;
+                            }, 2000);
+                            this.upload = false;
+                        })
+                        // If there was an error, log it to the console and show an alert with the error message
+                        .catch(error => {
+                            console.log(error);
+                            alert(error);
+                            this.loading = false;
+                        });
+
+
+
+                }else if (file.type === "application/pdf") {
                     // Make a POST request to the PDF upload API endpoint.
                     axios
-                        .post("http://localhost:8000/api/pdf-upload/", formData)
+                        .post("https://ondemandner.isti.cnr.it/llm/api/pdf-upload/", formData)
                         .then(response => {
                             // If the language is Italian, set the text and TXT file to the Italian versions.
                             if (this.language == "it") {
@@ -687,7 +733,7 @@ export default {
                 else if (file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || file.type === "application/msword") {
                     // Make a POST request to the Word upload API endpoint.
                     axios
-                        .post("http://localhost:8000/api/word-upload/", formData)
+                        .post("https://ondemandner.isti.cnr.it/llm/api/word-upload/", formData)
                         .then(response => {
                             // If the language is Italian, set the text and TXT file to the Italian versions.
                             if (this.language === "it") {
@@ -723,7 +769,7 @@ export default {
                 else if (file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
                     // Make a POST request to the XLSX upload API endpoint.
                     axios
-                        .post("http://localhost:8000/api/xlsx-upload/", formData)
+                        .post("https://ondemandner.isti.cnr.it/llm/api/xlsx-upload/", formData)
                         .then(response => {
                             // If the language is Italian, set the text and TXT file to the Italian versions.
                             if (this.language === "it") {
@@ -765,7 +811,7 @@ export default {
                 }
                 // Make a POST request to the get-config API endpoint to retrieve the available configurations and sets the relative list based on the language
 
-                axios.post("http://localhost:8000/api/get-config/", { "language": this.language })
+                axios.post("https://ondemandner.isti.cnr.it/llm/api/get-config/", { "language": this.language })
                     .then(response => {
                         if (this.language == "it") {
                             this.available_configs_it = response.data.configs;
@@ -787,7 +833,7 @@ export default {
             this.loading_editing = true;
             this.scrollDown();
             // Make a POST request to the specified API endpoint with the following data:
-            axios.post("http://localhost:8000/api/update-text/", {
+            axios.post("https://ondemandner.isti.cnr.it/llm/api/update-text/", {
                 // The text to be edited
                 text_toEdit: this.editText,
                 // The name of the file to be edited
@@ -825,7 +871,7 @@ export default {
             this.loading_config = true;
             this.scrollDown();
             // Send a POST request to the specified API endpoint with the following data:
-            axios.post("http://localhost:8000/api/load-config/", {
+            axios.post("https://ondemandner.isti.cnr.it/llm/api/load-config/", {
                 // The path to the text file to be analyzed
                 file_txt_path: this.txt_file,
                 // The language of the text
@@ -864,7 +910,7 @@ export default {
         // This function filters the NER output by a selected set of entities
         filter() {
             // Send a POST request to the specified API endpoint with the following data:
-            axios.post("http://localhost:8000/api/filter/", {
+            axios.post("https://ondemandner.isti.cnr.it/llm/api/filter/", {
                 // The path to the text file to be analyzed
                 file_txt_path: this.txt_file,
                 // The language of the text
@@ -904,7 +950,7 @@ export default {
                     this.model_choosen = "deepset/roberta-base-squad2";
             }
             // Send a POST request to the specified API endpoint with the following data:
-            axios.post("http://localhost:8000/api/qa/", {
+            axios.post("https://ondemandner.isti.cnr.it/llm/api/qa/", {
                 // The question to be answered
                 question: this.question,
                 // The name of the question-answering model to use
@@ -942,7 +988,7 @@ export default {
         saveQuestion() {
             this.saving_question = true;
             // Send a POST request to the API endpoint to save the question and answer
-            axios.post("http://localhost:8000/api/save-question/", {
+            axios.post("https://ondemandner.isti.cnr.it/llm/api/save-question/", {
                 name_entity: this.name_entity,
                 model: this.model_choosen,
                 question: this.question,
@@ -978,7 +1024,7 @@ export default {
                         }, 2000);
 
                         // Retrieve the updated configuration
-                        axios.post("http://localhost:8000/api/load-config/", {
+                        axios.post("https://ondemandner.isti.cnr.it/llm/api/load-config/", {
                             file_txt_path: this.txt_file,
                             language: this.language,
                             text: this.text,
@@ -998,7 +1044,7 @@ export default {
                                 this.saving_question = false;
                             });
                         // Retrieve the available configurations
-                        axios.post("http://localhost:8000/api/get-config/", { "language": this.language })
+                        axios.post("https://ondemandner.isti.cnr.it/llm/api/get-config/", { "language": this.language })
                             .then(response => {
                                 if (this.language == "it") {
                                     this.available_configs_it = response.data.configs; // Store the Italian configurations
@@ -1032,7 +1078,7 @@ export default {
             this.loading_change = true;
             this.scrollDown();
             // Send a POST request to the API endpoint to change the configuration settings.
-            axios.post("http://localhost:8000/api/change-cnf/", { config_name: this.config_to_change, txt: this.txt_file, language: this.language, context: this.text })
+            axios.post("https://ondemandner.isti.cnr.it/llm/api/change-cnf/", { config_name: this.config_to_change, txt: this.txt_file, language: this.language, context: this.text })
                 .then(response => {
                     // If the response from the API contains an error code, display an alert with the error message.
                     this.code = response.data.cod;
@@ -1045,7 +1091,7 @@ export default {
                         // Clear the current configuration selection.
                         this.config_to_change = null;
                         // Send a POST request to the API endpoint to load the updated configuration file.
-                        axios.post("http://localhost:8000/api/load-config/", { file_txt_path: this.txt_file, language: this.language, text: this.text, f_up: this.file_uploaded })
+                        axios.post("https://ondemandner.isti.cnr.it/llm/api/load-config/", { file_txt_path: this.txt_file, language: this.language, text: this.text, f_up: this.file_uploaded })
                             .then(response => {
                                 // Parse the loaded JSON data into an object and set it to a variable.
                                 this.dictionaryObj = JSON.parse(response.data.jsonner_str);
@@ -1065,7 +1111,7 @@ export default {
                                 this.loading_change = false;
                             });
                         // Send a POST request to the API endpoint to get the available configuration options.
-                        axios.post("http://localhost:8000/api/get-config/", { "language": this.language })
+                        axios.post("https://ondemandner.isti.cnr.it/llm/api/get-config/", { "language": this.language })
                             .then(response => {
                                 // If the language is Italian, update the available Italian configuration options.
                                 if (this.language == "it") {
@@ -1104,7 +1150,7 @@ export default {
 
                     // Send a POST request to the API endpoint to load the updated configuration file.
 
-                    axios.post("http://localhost:8000/api/load-config/", { file_txt_path: this.txt_file, language: this.language, text: this.text, f_up: this.file_uploaded })
+                    axios.post("https://ondemandner.isti.cnr.it/llm/api/load-config/", { file_txt_path: this.txt_file, language: this.language, text: this.text, f_up: this.file_uploaded })
                         .then(response => {
                             // Parse the loaded JSON data into an object and set it to a variable.
                             this.dictionaryObj = JSON.parse(response.data.jsonner_str);
@@ -1130,7 +1176,7 @@ export default {
         // This function deletes entities from the configuration file.
         deleteEn() {
             // Send a POST request to the API endpoint to delete the specified entities.
-            axios.post("http://localhost:8000/api/delete-entities/", { "file_config": this.file_config, "entities": this.todelete_entities })
+            axios.post("https://ondemandner.isti.cnr.it/llm/api/delete-entities/", { "file_config": this.file_config, "entities": this.todelete_entities })
                 .then(response => {
                     // If the response from the API contains an error code, display an alert with the error message.
                     if (response.data.cod == -1) {
@@ -1151,7 +1197,7 @@ export default {
 
                         this.scrollDown();
                         // Send a POST request to the API endpoint to load the updated configuration file.
-                        axios.post("http://localhost:8000/api/load-config/", { file_txt_path: this.txt_file, language: this.language, text: this.text, f_up: this.file_uploaded })
+                        axios.post("https://ondemandner.isti.cnr.it/llm/api/load-config/", { file_txt_path: this.txt_file, language: this.language, text: this.text, f_up: this.file_uploaded })
                             .then(response => {
                                 // Parse the loaded JSON data into an object and set it to a variable.
                                 this.dictionaryObj = JSON.parse(response.data.jsonner_str);
@@ -1171,7 +1217,7 @@ export default {
                                 alert(error);
                             });
                         // Send a POST request to the API endpoint to get the available configuration options.
-                        axios.post("http://localhost:8000/api/get-config/", { "language": this.language })
+                        axios.post("https://ondemandner.isti.cnr.it/llm/api/get-config/", { "language": this.language })
                             .then(response => {
                                 // If the language is Italian, update the available Italian configuration options.
                                 if (this.language == "it") {
