@@ -700,12 +700,12 @@ let config = {
                         .then(response => {
                             // If the language is Italian, set the text and TXT file to the Italian versions.
                             if (this.language == "it") {
-                                this.text = response.data.pdf_text_it;
+                                this.text = decodeURIComponent(response.data.pdf_text_it);
                                 this.txt_file = response.data.txt_file_pdf_it;
                             }
                             // Otherwise, set the text and TXT file to the English versions.
                             else {
-                                this.text = response.data.pdf_text_en;
+                                this.text = decodeURIComponent(response.data.pdf_text_en);
                                 this.txt_file = response.data.txt_file_pdf_en;
                             }
                             // Set the file_uploaded property to the title of the uploaded file.
@@ -737,12 +737,12 @@ let config = {
                         .then(response => {
                             // If the language is Italian, set the text and TXT file to the Italian versions.
                             if (this.language === "it") {
-                                this.text = response.data.docx_text_it;
+                                this.text = decodeURIComponent(response.data.docx_text_it);
                                 this.txt_file = response.data.txt_file_docx_it;
                             }
                             // Otherwise, set the text and TXT file to the English versions.
                             else {
-                                this.text = response.data.docx_text_en;
+                                this.text = decodeURIComponent(response.data.docx_text_en);
                                 this.txt_file = response.data.txt_file_docx_en;
                             }
                             // Set the file_uploaded property to the title of the uploaded file.
@@ -773,12 +773,12 @@ let config = {
                         .then(response => {
                             // If the language is Italian, set the text and TXT file to the Italian versions.
                             if (this.language === "it") {
-                                this.text = response.data.xlsx_text_it;
+                                this.text = decodeURIComponent(response.data.xlsx_text_it);
                                 this.txt_file = response.data.txt_file_xlsx_it;
                             }
                             // Otherwise, set the text and TXT file to the English versions.
                             else {
-                                this.text = response.data.xlsx_text_en;
+                                this.text = decodeURIComponent(response.data.xlsx_text_en);
                                 this.txt_file = response.data.txt_file_xlsx_en;
                             }
                             // Set the file_uploaded property to the title of the uploaded file.
@@ -845,7 +845,7 @@ let config = {
             })
                 // If the request was successful, update the text and file variables and disable editing mode
                 .then(response => {
-                    this.text = this.editText;
+                    this.text = decodeURIComponent(this.editText);
                     this.txt_file = response.data.txt_file_edited;
                     this.editing = false;
                     this.loading_editing = false;
@@ -922,7 +922,7 @@ let config = {
             })
                 // If the request was successful, update some variables with the response data
                 .then(response => {
-                    this.high_text = response.data.high;
+                    this.high_text = decodeURIComponent(response.data.high);
                     this.colors = response.data.colors;
                     this.high_entities = response.data.ent;
                     this.question = null;
